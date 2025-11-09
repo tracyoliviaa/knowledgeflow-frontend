@@ -8,6 +8,11 @@ export const useAuth = () => {
     authService.isAuthenticated()
   );
 
+  useEffect(() => {
+    // Check authentication status on mount
+    setIsAuthenticated(authService.isAuthenticated());
+  }, []);
+
   const login = async (email: string, password: string) => {
     await authService.login({ email, password });
     setIsAuthenticated(true);
@@ -20,6 +25,7 @@ export const useAuth = () => {
   const logout = () => {
     authService.logout();
     setIsAuthenticated(false);
+    window.location.href = '/login';
   };
 
   return { isAuthenticated, login, register, logout };
