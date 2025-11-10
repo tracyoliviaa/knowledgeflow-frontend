@@ -1,5 +1,3 @@
-// src/components/auth/RegisterForm.tsx
-
 import React, { useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
@@ -31,7 +29,6 @@ export const RegisterForm: React.FC = () => {
 
     try {
       await register(email, password);
-      // Show success message and redirect
       navigate('/login');
     } catch (err: any) {
       console.error('Registration error:', err);
@@ -146,14 +143,7 @@ export const RegisterForm: React.FC = () => {
                   className="w-4 h-4 mt-1 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
                 />
                 <label className="ml-2 text-sm text-gray-600">
-                  Ich akzeptiere die{' '}
-                  <a href="#" className="text-purple-600 hover:text-purple-700 font-medium">
-                    Nutzungsbedingungen
-                  </a>{' '}
-                  und{' '}
-                  <a href="#" className="text-purple-600 hover:text-purple-700 font-medium">
-                    Datenschutzrichtlinien
-                  </a>
+                  Ich akzeptiere die Nutzungsbedingungen und Datenschutzrichtlinien
                 </label>
               </div>
 
@@ -189,15 +179,15 @@ export const RegisterForm: React.FC = () => {
 
             {/* Login Link */}
             <div className="mt-6 text-center">
-              <a
-                href="/login"
+              <button
+                onClick={() => navigate('/login')}
                 className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium"
               >
                 <svg className="mr-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 17l-5-5m0 0l5-5m-5 5h12" />
                 </svg>
                 Zurück zum Login
-              </a>
+              </button>
             </div>
           </div>
         </div>
@@ -205,13 +195,6 @@ export const RegisterForm: React.FC = () => {
 
       {/* Right side - Hero Section */}
       <div className="hidden lg:flex flex-1 bg-gradient-to-br from-purple-600 via-pink-600 to-red-600 p-12 items-center justify-center relative overflow-hidden">
-        {/* Animated background elements */}
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-0 -left-4 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl animate-blob"></div>
-          <div className="absolute top-0 -right-4 w-72 h-72 bg-yellow-300 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-2000"></div>
-          <div className="absolute -bottom-8 left-20 w-72 h-72 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-4000"></div>
-        </div>
-
         {/* Content */}
         <div className="relative z-10 text-white max-w-lg">
           <h2 className="text-5xl font-bold mb-6 leading-tight">
