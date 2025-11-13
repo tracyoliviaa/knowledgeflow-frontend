@@ -1,10 +1,10 @@
 // src/services/api.ts
-
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8000/api';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
 
-// Axios-Instanz mit Basis-Config
+console.log('🔗 API URL:', API_URL); // Debug log
+
 export const api = axios.create({
   baseURL: API_URL,
   headers: {
@@ -12,7 +12,6 @@ export const api = axios.create({
   },
 });
 
-// Interceptor: JWT-Token automatisch anhängen
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) {
@@ -21,7 +20,6 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Interceptor: Bei 401 ausloggen
 api.interceptors.response.use(
   (response) => response,
   (error) => {
