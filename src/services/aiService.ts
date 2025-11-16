@@ -1,39 +1,74 @@
+// src/services/aiService.ts
 
 import { api } from './api';
+
+export interface SummaryResponse {
+  summary: string;
+}
 
 export interface Flashcard {
   question: string;
   answer: string;
 }
 
-export interface SummaryResponse {
-  summary: string;
-  cost: number;
+export interface UsageStats {
+  current_month: {
+    total_cost: number;
+    operations: Array<{
+      operation: string;
+      count: string;
+      cost: string;
+    }>;
+  };
+  all_time: {
+    total_requests: number;
+    total_input_tokens: number;
+    total_output_tokens: number;
+    total_tokens: number;
+    total_cost: number;
+  };
 }
 
-export const aiService = {
+class AIService {
+  /**
+   * Summarizes an item's content
+   */
   async summarizeItem(itemId: number): Promise<SummaryResponse> {
-    const response = await api.post('/ai/summarize', { itemId });
+    const response = await api.post(`/ai/summarize/${itemId}`);
     return response.data;
-  },
+  }
 
+  /**
+   * Generates flashcards from an item
+   */
   async generateFlashcards(itemId: number, count: number = 5): Promise<Flashcard[]> {
-    const response = await api.post('/ai/generate-flashcards', { itemId, count });
-    return response.data.flashcards;
-  },
+    const response = await api.post(`/ai/flashcards/${itemId}`, { count });
+    return response.data.flashcards || [];
+  }
 
+  /**
+   * Suggests topics for an item
+   */
   async suggestTopics(itemId: number): Promise<string[]> {
-    const response = await api.post('/ai/suggest-topics', { itemId });
-    return response.data.suggestions;
-  },
+    const response = await api.post(`/ai/topics/${itemId}`);
+    return response.data.topics || [];
+  }
 
+  /**
+   * Extracts key insights from an item
+   */
   async extractInsights(itemId: number): Promise<string[]> {
-    const response = await api.post('/ai/extract-insights', { itemId });
-    return response.data.takeaways;
-  },
+    const response = await api.post(`/ai/insights/${itemId}`);
+    return response.data.insights || [];
+  }
 
-  async getUsageStats() {
+  /**
+   * Gets AI usage statistics for the current user
+   */
+  async getUsageStats(): Promise<UsageStats> {
     const response = await api.get('/ai/usage-stats');
     return response.data;
   }
-};
+}
+
+export const aiService = new AIService();

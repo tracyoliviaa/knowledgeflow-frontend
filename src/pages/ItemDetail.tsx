@@ -1,10 +1,9 @@
 // src/pages/ItemDetail.tsx
-
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../services/api';
-import { AIFeatures } from '../components/items/AIFeatures';
+import { AIFeatures } from '../components/items/AIFeautures';
 
 export const ItemDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();

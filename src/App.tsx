@@ -8,6 +8,7 @@ import { RegisterForm } from "./components/auth/RegisterForm"
 import Dashboard from "./pages/Dashboard"
 import Items from "./pages/Items"
 import Search from "./pages/Search"
+import { ItemDetail } from "./pages/ItemDetail"   // 👈 import your detail page
 import { useAuth } from "./hooks/useAuth"
 
 // Create QueryClient instance
@@ -74,6 +75,16 @@ const App: React.FC = () => {
               <ProtectedRoute>
                 <MainLayout>
                   <Items />
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/items/:id"
+            element={
+              <ProtectedRoute>
+                <MainLayout>
+                  <ItemDetail />
                 </MainLayout>
               </ProtectedRoute>
             }

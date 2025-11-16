@@ -1,5 +1,4 @@
 // src/components/items/ItemCard.tsx
-
 import React, { useState } from 'react';
 import { aiService } from '../../services/aiService';
 
@@ -23,7 +22,8 @@ export const ItemCard: React.FC<ItemCardProps> = ({ item }) => {
     setLoading(true);
     try {
       const result = await aiService.summarizeItem(item.id);
-      setSummary(result);
+      // Extract the summary property from the response object
+      setSummary(result.summary);
     } catch (error) {
       console.error('Summarization failed:', error);
     } finally {
@@ -50,7 +50,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({ item }) => {
           {item.type}
         </span>
       </div>
-      
+
       {item.content && (
         <p className="text-gray-600 text-sm mb-3 line-clamp-3">
           {item.content}
@@ -64,7 +64,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({ item }) => {
           <p className="text-sm text-blue-800">{summary}</p>
         </div>
       )}
-      
+
       {/* AI-Buttons */}
       <div className="flex gap-2 mb-3">
         <button
