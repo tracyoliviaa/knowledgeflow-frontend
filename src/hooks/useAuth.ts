@@ -22,11 +22,23 @@ export const useAuth = () => {
     await authService.register({ email, password });
   };
 
+  // 🆕 Demo Login hinzugefügt
+  const loginAsDemo = () => {
+    authService.loginAsDemo();
+    setIsAuthenticated(true);
+  };
+
   const logout = () => {
     authService.logout();
     setIsAuthenticated(false);
     window.location.href = '/login';
   };
 
-  return { isAuthenticated, login, register, logout };
+  return { 
+    isAuthenticated, 
+    login, 
+    register, 
+    logout, 
+    loginAsDemo  // 🟢 Hinzugefügt!
+  };
 };

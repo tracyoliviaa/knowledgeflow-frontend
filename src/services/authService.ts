@@ -1,15 +1,19 @@
-// src/services/authService.ts
-
+// src/services/authService.ts → KOMPLETT ersetzen:
+import { LoginCredentials, RegisterData } from '../types/auth';
 import { api } from './api';
 
-interface LoginCredentials {
-  email: string;
-  password: string;
+const DEMO_TOKEN = 'demo-token-knowledgeflow';
+
+export interface AuthService {
+  login: (credentials: LoginCredentials) => Promise<string>;
+  loginAsDemo: () => void;
+  isAuthenticated: () => boolean;
+  isDemoMode: () => boolean;  // 🆕 TYPE DEFINITION
+  logout: () => void;
+  register: (data: RegisterData) => Promise<any>;
 }
 
-interface RegisterData extends LoginCredentials {}
-
-export const authService = {
+export const authService: AuthService = {
   async login(credentials: LoginCredentials) {
     const response = await api.post('/login', credentials);
     const { token } = response.data;
@@ -17,16 +21,24 @@ export const authService = {
     return token;
   },
 
-  async register(data: RegisterData) {
-    const response = await api.post('/register', data);
-    return response.data;
+  loginAsDemo() {
+    localStorage.setItem('token', DEMO_TOKEN);
+  },
+
+  isAuthenticated(): boolean {
+    return !!localStorage.getItem('token');
+  },
+
+  isDemoMode(): boolean {  // ✅ JETZT EXPORTIERT
+    return localStorage.getItem('token') === DEMO_TOKEN;
   },
 
   logout() {
     localStorage.removeItem('token');
   },
 
-  isAuthenticated(): boolean {
-    return !!localStorage.getItem('token');
+  async register(data: RegisterData) {
+    const response = await api.post('/register', data);
+    return response.data;
   },
 };
