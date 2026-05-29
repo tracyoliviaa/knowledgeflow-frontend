@@ -1,54 +1,65 @@
-// src/pages/Search.tsx
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { authService } from '../services/authService';
 import { api } from '../services/api';
-import { Item } from '../types/Item';  // Deine Item Types
-
-// 🆕 Demo Search Daten (Item[])
-const DEMO_SEARCH_ITEMS: Item[] = [
-  { id: 1, title: 'React Best Practices', content: 'Komponenten klein halten, Props definieren...', type: 'article', createdAt: '2026-04-01' },
-  { id: 2, title: 'TypeScript Grundlagen', content: 'Interfaces, Generics, Union Types...', type: 'note', createdAt: '2026-04-02' },
-  { id: 3, title: 'Node.js REST API', content: 'Express Router, Middleware, Error Handling...', type: 'video', createdAt: '2026-04-03' },
-  { id: 4, title: 'SQLite Datenbank', content: 'better-sqlite3, Queries, Migration...', type: 'article', createdAt: '2026-04-04' },
-];
+import { demoDataService } from '../services/demoData';
+import { aiService } from '../services/aiService';
+import { Item } from '../types/Item';
 
 const Search: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [showSummary, setShowSummary] = useState(false);
+  const [searchSummary, setSearchSummary] = useState('');
+  const [summaryLoading, setSummaryLoading] = useState(false);
+  const [summaryError, setSummaryError] = useState('');
   const isDemo = authService.isDemoMode();
 
-  // 🆕 Search Query (debounced)
   const { data: items, isLoading } = useQuery<Item[]>({
     queryKey: ['search', searchTerm],
     queryFn: async () => {
       if (!searchTerm.trim()) return [];
-      
+
       if (isDemo) {
-        // 🆕 Demo Filter
-        return DEMO_SEARCH_ITEMS.filter(item =>
-          item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          item.content.toLowerCase().includes(searchTerm.toLowerCase())
-        );
+        return demoDataService.searchItems(searchTerm);
       }
-      
+
       const response = await api.get(`/items/search?q=${encodeURIComponent(searchTerm)}`);
       return response.data.data;
     },
-    enabled: !!searchTerm.trim(),  // Nur suchen wenn Term > 0
+    enabled: !!searchTerm.trim(),
   });
 
-  // 🆕 Demo "Zusammenfassen" Simulation
-  const handleSummarize = () => {
+  const handleSummarize = async () => {
+    setSummaryLoading(true);
+    setSummaryError('');
+    setSearchSummary('');
+
     if (isDemo) {
-      setShowSummary(true);
-      // Demo Loading → Summary
-      setTimeout(() => {
-        setShowSummary(false);
-      }, 1500);
-    } else {
-      // Echter API Call
-      // aiService.summarize(searchTerm)
+      const firstResult = items?.[0];
+      if (!firstResult) {
+        setSummaryError('Keine passenden Inhalte zum Zusammenfassen gefunden.');
+        setSummaryLoading(false);
+        return;
+      }
+
+      const result = demoDataService.summarizeItem(firstResult.id);
+      setSearchSummary(result.summary);
+      setSummaryLoading(false);
+      return;
+    }
+
+    try {
+      const firstResult = items?.[0];
+      if (!firstResult) {
+        setSummaryError('Keine passenden Inhalte zum Zusammenfassen gefunden.');
+        return;
+      }
+
+      const result = await aiService.summarizeItem(firstResult.id);
+      setSearchSummary(result.summary);
+    } catch {
+      setSummaryError('KI-Zusammenfassung fehlgeschlagen. Bitte pruefe Backend und OpenAI-Key.');
+    } finally {
+      setSummaryLoading(false);
     }
   };
 
@@ -59,46 +70,42 @@ const Search: React.FC = () => {
         <p className="text-slate-600 text-sm">Finde Items in deiner Wissensbasis</p>
       </div>
 
-      {/* 🆕 Search Bar + Zusammenfassen Button */}
       <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
         <div className="flex flex-col lg:flex-row gap-3">
           <input
             type="text"
-            placeholder="z.B. 'React' oder 'TypeScript'..."
+            placeholder="z.B. React oder TypeScript"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="flex-1 px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
           <button
             onClick={handleSummarize}
-            disabled={!searchTerm.trim()}
+            disabled={!searchTerm.trim() || summaryLoading}
             className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-lg hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2"
           >
-            ✨ Zusammenfassen
+            {summaryLoading ? 'KI arbeitet...' : 'Zusammenfassen'}
           </button>
         </div>
 
-        {/* 🆕 Demo Banner */}
         {isDemo && (
           <div className="mt-3 p-3 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-800">
-            🎭 Demo-Modus: Suche simuliert, KI-Zusammenfassung Demo
+            Demo-Modus: Suche und KI-Zusammenfassung laufen lokal mit Beispieldaten.
           </div>
         )}
       </div>
 
-      {/* 🆕 Loading */}
       {isLoading && (
         <div className="flex justify-center items-center h-32">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
         </div>
       )}
 
-      {/* 🆕 Search Results */}
       {searchTerm.trim() && !isLoading && items && items.length > 0 && (
         <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-semibold text-slate-900">
-              {items.length} Ergebnis{items.length !== 1 ? 'se' : ''} für "{searchTerm}"
+              {items.length} Ergebnis{items.length !== 1 ? 'se' : ''} fuer "{searchTerm}"
             </h2>
             <span className="text-sm text-slate-500">Neueste zuerst</span>
           </div>
@@ -119,7 +126,6 @@ const Search: React.FC = () => {
         </div>
       )}
 
-      {/* 🆕 No Results */}
       {searchTerm.trim() && items?.length === 0 && !isLoading && (
         <div className="text-center py-16 bg-slate-50 rounded-xl border-2 border-dashed border-slate-200">
           <svg className="w-16 h-16 text-slate-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -127,38 +133,29 @@ const Search: React.FC = () => {
           </svg>
           <h3 className="text-lg font-medium text-slate-900 mb-2">Keine Ergebnisse</h3>
           <p className="text-slate-500 mb-6 max-w-md mx-auto">
-            Keine Items gefunden für "<strong>{searchTerm}</strong>". Versuche andere Begriffe.
+            Keine Items gefunden fuer "<strong>{searchTerm}</strong>". Versuche andere Begriffe.
           </p>
-          <button 
+          <button
             onClick={() => setSearchTerm('')}
             className="px-6 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition font-medium"
           >
-            Suche zurücksetzen
+            Suche zuruecksetzen
           </button>
         </div>
       )}
 
-      {/* 🆕 Demo Zusammenfassung Simulation */}
-      {showSummary && (
-        <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-xl p-6 animate-in">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500" />
-            <h3 className="font-semibold text-slate-900">KI fasst zusammen...</h3>
-          </div>
-          <div className="space-y-3">
-            <p className="text-slate-700 leading-relaxed">
-              <strong>"{searchTerm}"</strong> bezieht sich auf Frontend-Technologien. 
-              Du hast 2 passende Items: React Best Practices (Article) und TypeScript Grundlagen (Note).
-            </p>
-            <div className="flex gap-2 pt-4 border-t border-slate-200">
-              <button className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition">
-                Vollständig lesen
-              </button>
-              <button className="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg text-sm hover:bg-slate-200 transition">
-                Speichern
-              </button>
-            </div>
-          </div>
+      {summaryError && (
+        <div className="bg-red-50 border border-red-200 text-red-700 rounded-xl p-4 text-sm">
+          {summaryError}
+        </div>
+      )}
+
+      {searchSummary && searchTerm.trim() && (
+        <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-xl p-6">
+          <h3 className="font-semibold text-slate-900 mb-3">KI-Zusammenfassung</h3>
+          <p className="text-slate-700 leading-relaxed">
+            {searchSummary}
+          </p>
         </div>
       )}
     </div>

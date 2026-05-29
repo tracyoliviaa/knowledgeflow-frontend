@@ -1,5 +1,5 @@
-// src/components/items/ItemCard.tsx
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { aiService } from '../../services/aiService';
 
 interface Item {
@@ -22,7 +22,6 @@ export const ItemCard: React.FC<ItemCardProps> = ({ item }) => {
     setLoading(true);
     try {
       const result = await aiService.summarizeItem(item.id);
-      // Extract the summary property from the response object
       setSummary(result.summary);
     } catch (error) {
       console.error('Summarization failed:', error);
@@ -44,7 +43,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({ item }) => {
 
   return (
     <div className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition">
-      <div className="flex justify-between items-start mb-2">
+      <div className="flex justify-between items-start gap-3 mb-2">
         <h3 className="text-lg font-semibold text-gray-800">{item.title}</h3>
         <span className={`px-2 py-1 rounded text-xs ${getTypeColor(item.type)}`}>
           {item.type}
@@ -57,16 +56,14 @@ export const ItemCard: React.FC<ItemCardProps> = ({ item }) => {
         </p>
       )}
 
-      {/* AI Summary anzeigen */}
       {summary && (
         <div className="bg-blue-50 border-l-4 border-blue-500 p-3 mb-3">
-          <p className="text-sm font-semibold text-blue-900 mb-1">📝 KI-Zusammenfassung:</p>
+          <p className="text-sm font-semibold text-blue-900 mb-1">KI-Zusammenfassung</p>
           <p className="text-sm text-blue-800">{summary}</p>
         </div>
       )}
 
-      {/* AI-Buttons */}
-      <div className="flex gap-2 mb-3">
+      <div className="flex flex-wrap gap-2 mb-3">
         <button
           onClick={handleSummarize}
           disabled={loading}
@@ -78,7 +75,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({ item }) => {
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-              Lädt...
+              Laedt...
             </>
           ) : (
             <>
@@ -89,6 +86,12 @@ export const ItemCard: React.FC<ItemCardProps> = ({ item }) => {
             </>
           )}
         </button>
+        <Link
+          to={`/items/${item.id}`}
+          className="flex items-center px-3 py-1.5 bg-slate-100 text-slate-700 text-xs rounded hover:bg-slate-200 transition"
+        >
+          KI-Details
+        </Link>
       </div>
 
       <div className="text-xs text-gray-500">

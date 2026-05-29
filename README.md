@@ -1,46 +1,46 @@
-# Getting Started with Create React App
+# KnowledgeFlow Frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+React frontend for KnowledgeFlow. The app talks to the backend through `REACT_APP_API_URL` and also includes a recruiter-friendly demo login that works without registration.
 
-## Available Scripts
+## Demo Login
 
-In the project directory, you can run:
+Recruiters can use the blue **Demo starten** button on the login page.
 
-### `npm start`
+Optional demo credentials:
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+```txt
+demo@knowledgeflow.app
+demo123
+```
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+The demo mode uses local example data in the browser. It does not require a backend account and does not create OpenAI costs.
 
-### `npm test`
+## Environment
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Frontend `.env`:
 
-### `npm run build`
+```txt
+REACT_APP_API_URL=https://your-backend.example.com/api
+PUBLIC_URL=/
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+OpenAI keys must stay on the backend only. Do not put `OPENAI_API_KEY` into this frontend repo or into Netlify frontend variables that get exposed to the browser.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Backend hosting should define:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```txt
+OPENAI_API_KEY=sk-...
+JWT_SECRET=...
+DATABASE_URL=...
+FRONTEND_URL=https://your-netlify-site.netlify.app
+```
 
-### `npm run eject`
+For Render, Railway, Fly.io or another backend host, add the key in the backend service settings under environment variables. The frontend only needs `REACT_APP_API_URL`, because all OpenAI requests should go through backend routes such as `/api/ai/summarize/:id`, `/api/ai/flashcards/:id`, `/api/ai/topics/:id`, `/api/ai/insights/:id` and `/api/ai/usage-stats`.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+## Scripts
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+```bash
+npm start
+npm run build
+npm test
+```

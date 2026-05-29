@@ -3,6 +3,6 @@ export interface Item {
   id: number;
   title: string;
   content: string;
-  type: 'article' | 'note' | 'video';
+  type: string;
   createdAt: string;
 }

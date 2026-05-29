@@ -1,6 +1,8 @@
 // src/services/aiService.ts
 
 import { api } from './api';
+import { authService } from './authService';
+import { demoDataService } from './demoData';
 
 export interface SummaryResponse {
   summary: string;
@@ -34,6 +36,10 @@ class AIService {
    * Summarizes an item's content
    */
   async summarizeItem(itemId: number): Promise<SummaryResponse> {
+    if (authService.isDemoMode()) {
+      return demoDataService.summarizeItem(itemId);
+    }
+
     const response = await api.post(`/ai/summarize/${itemId}`);
     return response.data;
   }
@@ -42,6 +48,10 @@ class AIService {
    * Generates flashcards from an item
    */
   async generateFlashcards(itemId: number, count: number = 5): Promise<Flashcard[]> {
+    if (authService.isDemoMode()) {
+      return demoDataService.generateFlashcards(itemId, count);
+    }
+
     const response = await api.post(`/ai/flashcards/${itemId}`, { count });
     return response.data.flashcards || [];
   }
@@ -50,6 +60,10 @@ class AIService {
    * Suggests topics for an item
    */
   async suggestTopics(itemId: number): Promise<string[]> {
+    if (authService.isDemoMode()) {
+      return demoDataService.suggestTopics(itemId);
+    }
+
     const response = await api.post(`/ai/topics/${itemId}`);
     return response.data.topics || [];
   }
@@ -58,6 +72,10 @@ class AIService {
    * Extracts key insights from an item
    */
   async extractInsights(itemId: number): Promise<string[]> {
+    if (authService.isDemoMode()) {
+      return demoDataService.extractInsights(itemId);
+    }
+
     const response = await api.post(`/ai/insights/${itemId}`);
     return response.data.insights || [];
   }
@@ -66,6 +84,10 @@ class AIService {
    * Gets AI usage statistics for the current user
    */
   async getUsageStats(): Promise<UsageStats> {
+    if (authService.isDemoMode()) {
+      return demoDataService.getUsageStats();
+    }
+
     const response = await api.get('/ai/usage-stats');
     return response.data;
   }

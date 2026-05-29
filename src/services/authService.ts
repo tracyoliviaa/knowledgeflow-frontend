@@ -1,6 +1,7 @@
 // src/services/authService.ts → KOMPLETT ersetzen:
 import { LoginCredentials, RegisterData } from '../types/auth';
 import { api } from './api';
+import { DEMO_LOGIN } from './demoData';
 
 const DEMO_TOKEN = 'demo-token-knowledgeflow';
 
@@ -15,6 +16,14 @@ export interface AuthService {
 
 export const authService: AuthService = {
   async login(credentials: LoginCredentials) {
+    if (
+      credentials.email.trim().toLowerCase() === DEMO_LOGIN.email &&
+      credentials.password === DEMO_LOGIN.password
+    ) {
+      localStorage.setItem('token', DEMO_TOKEN);
+      return DEMO_TOKEN;
+    }
+
     const response = await api.post('/login', credentials);
     const { token } = response.data;
     localStorage.setItem('token', token);

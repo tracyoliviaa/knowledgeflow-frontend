@@ -1,17 +1,60 @@
 import React from "react";
+import { Link } from "react-router-dom";
+import { Brain, FileSearch, Layers, Sparkles } from "lucide-react";
 import { AIUsageDashboard } from "../components/dashboard/AIUsageDashboard";
+
+const aiWorkflows = [
+  {
+    title: "Wissen verdichten",
+    description: "Lange Notizen, Artikel und Videos werden zu kurzen Zusammenfassungen.",
+    icon: FileSearch,
+  },
+  {
+    title: "Lernen vorbereiten",
+    description: "Aus gespeicherten Inhalten entstehen Lernkarten und wiederholbare Fragen.",
+    icon: Layers,
+  },
+  {
+    title: "Themen organisieren",
+    description: "KI erkennt Themen, Schlagworte und die wichtigsten Erkenntnisse pro Item.",
+    icon: Brain,
+  },
+];
 
 const Dashboard: React.FC = () => {
   return (
     <div>
-      <h1 className="text-3xl font-bold text-slate-900 mb-2">
-        Welcome to KnowledgeFlow
-      </h1>
-      <p className="text-slate-600 mb-8">
-        Manage your knowledge base efficiently.
-      </p>
+      <div className="mb-8">
+        <div className="flex items-center gap-3 mb-3">
+          <div className="w-11 h-11 bg-blue-100 rounded-lg flex items-center justify-center">
+            <Sparkles className="w-6 h-6 text-blue-700" />
+          </div>
+          <div>
+            <h1 className="text-3xl font-bold text-slate-900">
+              KnowledgeFlow AI Workspace
+            </h1>
+            <p className="text-slate-600">
+              Sammle Inhalte, lasse sie von KI strukturieren und finde schneller heraus, was wichtig ist.
+            </p>
+          </div>
+        </div>
+      </div>
 
-      {/* AI Usage Statistics */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        {aiWorkflows.map((workflow) => {
+          const Icon = workflow.icon;
+          return (
+            <div key={workflow.title} className="bg-white rounded-lg border border-slate-200 p-5">
+              <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center mb-4">
+                <Icon className="w-5 h-5 text-slate-700" />
+              </div>
+              <h2 className="text-lg font-semibold text-slate-900 mb-2">{workflow.title}</h2>
+              <p className="text-sm text-slate-600 leading-relaxed">{workflow.description}</p>
+            </div>
+          );
+        })}
+      </div>
+
       <div className="mb-8">
         <h2 className="text-2xl font-bold text-slate-900 mb-4">
           KI-Nutzungsstatistik
@@ -25,8 +68,8 @@ const Dashboard: React.FC = () => {
           Schnellzugriff
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <a
-            href="/items"
+          <Link
+            to="/items"
             className="bg-white rounded-lg border border-slate-200 p-6 hover:shadow-md transition"
           >
             <div className="flex items-center gap-3 mb-3">
@@ -48,12 +91,12 @@ const Dashboard: React.FC = () => {
               <h2 className="text-lg font-semibold text-slate-900">Items</h2>
             </div>
             <p className="text-slate-600 text-sm">
-              Browse and manage all items in your knowledge base.
+              Inhalte speichern und anschliessend mit KI zusammenfassen.
             </p>
-          </a>
+          </Link>
 
-          <a
-            href="/search"
+          <Link
+            to="/search"
             className="bg-white rounded-lg border border-slate-200 p-6 hover:shadow-md transition"
           >
             <div className="flex items-center gap-3 mb-3">
@@ -75,11 +118,11 @@ const Dashboard: React.FC = () => {
               <h2 className="text-lg font-semibold text-slate-900">Search</h2>
             </div>
             <p className="text-slate-600 text-sm">
-              Quickly find what you need across your knowledge base.
+              Begriffe finden und passende Inhalte direkt verdichten.
             </p>
-          </a>
+          </Link>
 
-          <div className="bg-white rounded-lg border border-slate-200 p-6 hover:shadow-md transition">
+          <Link to="/items" className="bg-white rounded-lg border border-slate-200 p-6 hover:shadow-md transition">
             <div className="flex items-center gap-3 mb-3">
               <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
                 <svg
@@ -101,9 +144,9 @@ const Dashboard: React.FC = () => {
               </h2>
             </div>
             <p className="text-slate-600 text-sm">
-              Use AI to summarize, create flashcards, and extract insights.
+              Oeffne ein Item und starte Zusammenfassung, Lernkarten, Themen oder Insights.
             </p>
-          </div>
+          </Link>
         </div>
       </div>
     </div>

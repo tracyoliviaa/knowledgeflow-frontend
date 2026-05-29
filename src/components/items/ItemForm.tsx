@@ -3,6 +3,8 @@
 import React, { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../services/api';
+import { authService } from '../../services/authService';
+import { demoDataService } from '../../services/demoData';
 
 interface ItemFormProps {
   onSuccess?: () => void;
@@ -15,9 +17,14 @@ export const ItemForm: React.FC<ItemFormProps> = ({ onSuccess }) => {
   const [url, setUrl] = useState('');
   
   const queryClient = useQueryClient();
+  const isDemo = authService.isDemoMode();
 
   const createItemMutation = useMutation({
     mutationFn: async (data: any) => {
+      if (isDemo) {
+        return demoDataService.createItem(data);
+      }
+
       const response = await api.post('/items', data);
       return response.data;
     },
@@ -27,6 +34,7 @@ export const ItemForm: React.FC<ItemFormProps> = ({ onSuccess }) => {
       setContent('');
       setUrl('');
       setType('note');
+      queryClient.invalidateQueries({ queryKey: ['search'] });
       onSuccess?.();
     },
   });
@@ -103,6 +111,12 @@ export const ItemForm: React.FC<ItemFormProps> = ({ onSuccess }) => {
       {createItemMutation.isError && (
         <div className="mt-4 bg-red-100 text-red-700 p-3 rounded">
           Fehler beim Erstellen des Items
+        </div>
+      )}
+
+      {isDemo && (
+        <div className="mt-4 bg-amber-50 border border-amber-200 text-amber-800 p-3 rounded text-sm">
+          Demo-Modus: Neue Items werden nur lokal in diesem Browser gespeichert.
         </div>
       )}
     </form>

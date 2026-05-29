@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
+import { DEMO_LOGIN } from '../../services/demoData';
 
 export const LoginForm: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -15,7 +16,7 @@ export const LoginForm: React.FC = () => {
       await login(email, password);
       navigate('/dashboard');
     } catch (err) {
-      setError('Login fehlgeschlagen. Bitte überprüfe deine Daten.');
+      setError('Login fehlgeschlagen. Bitte pruefe deine Daten.');
     }
   };
 
@@ -24,25 +25,36 @@ export const LoginForm: React.FC = () => {
     navigate('/dashboard');
   };
 
+  const fillDemoCredentials = () => {
+    setEmail(DEMO_LOGIN.email);
+    setPassword(DEMO_LOGIN.password);
+    setError('');
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-md w-96">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-sm">
         <h2 className="text-2xl font-bold mb-2 text-center">Login</h2>
         <p className="text-center text-gray-400 text-sm mb-6">KnowledgeFlow</p>
 
-        {/* ✅ Demo Banner */}
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-          <p className="text-sm text-blue-700 font-medium mb-2">
-            🚀 Kein Account nötig
-          </p>
+          <p className="text-sm text-blue-700 font-medium mb-2">Recruiter Demo</p>
           <p className="text-xs text-blue-500 mb-3">
-            Teste alle Features sofort ohne Registrierung.
+            Sofort testen ohne Registrierung. Die Demo nutzt lokale Beispieldaten.
           </p>
           <button
+            type="button"
             onClick={handleDemo}
             className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition font-medium text-sm"
           >
-            Demo starten →
+            Demo starten
+          </button>
+          <button
+            type="button"
+            onClick={fillDemoCredentials}
+            className="w-full mt-2 text-xs text-blue-600 hover:text-blue-700"
+          >
+            Demo-Zugang eintragen ({DEMO_LOGIN.email} / {DEMO_LOGIN.password})
           </button>
         </div>
 
@@ -66,6 +78,7 @@ export const LoginForm: React.FC = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+              required
             />
           </div>
 
@@ -76,6 +89,7 @@ export const LoginForm: React.FC = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+              required
             />
           </div>
 
